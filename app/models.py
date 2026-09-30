@@ -19,3 +19,35 @@ class Well(BaseModel):
     water_cut_pct: float
     last_inspection: date
     status_note: str
+
+
+class Deferment(BaseModel):
+    well_id: int
+    well_name: str
+    pad: str
+    status: WellStatus
+    lost_bopd: float
+    cause: str
+    planned: bool
+    owner: str
+    next_action: str
+    expected_restart: date | None
+
+
+class IntegrityItem(BaseModel):
+    id: int
+    well_id: int
+    well_name: str
+    check_type: str
+    due_date: date
+    owner: str
+    state: Literal["overdue", "due"]
+    days_overdue: int
+
+
+class DefermentReport(BaseModel):
+    as_of: date
+    due_within_days: int
+    total_lost_bopd: float
+    deferments: list[Deferment]
+    integrity: list[IntegrityItem]

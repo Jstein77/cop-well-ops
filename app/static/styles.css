@@ -204,6 +204,7 @@ h1, h2, p { margin: 0; }
   background: var(--card);
   font-size: 13px;
 }
+.pill-sub { display: flex; margin-top: 2px; font-size: 12px; font-weight: 400; color: var(--muted); }
 .pill-producing::before { background: var(--cop-green); }
 .pill-shut_in::before { background: var(--cop-dark-red); }
 .pill-workover::before { background: var(--cop-orange); }
@@ -222,6 +223,10 @@ h1, h2, p { margin: 0; }
   vertical-align: 1px;
 }
 .badge-overdue { color: var(--bad); }
+.badge-due { color: var(--warn); margin-left: 0; }
+.badge-overdue:first-child { margin-left: 0; }
+.badge-unplanned { color: var(--bad); }
+.badge-planned { color: var(--muted); }
 
 .callout {
   margin-bottom: 24px;
