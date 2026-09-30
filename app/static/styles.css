@@ -48,3 +48,19 @@ table {
 
 th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
 th { font-size: 12px; text-transform: uppercase; color: var(--muted); }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.card { display: flex; flex-direction: column; gap: 4px; padding: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; }
+.card strong { font-size: 26px; }
+
+.filters { display: flex; gap: 16px; align-items: end; margin-bottom: 12px; }
+.filters label { display: flex; flex-direction: column; font-size: 13px; color: var(--muted); gap: 4px; }
+.filters select, .filters button { padding: 6px 10px; font-size: 14px; }
+
+.pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; text-transform: capitalize; color: #fff; width: fit-content; }
+.pill-producing { background: var(--ok); }
+.pill-shut_in { background: var(--bad); }
+.pill-workover { background: var(--warn); }
+.pill-drilling { background: var(--info); }
+
+.badge-overdue { margin-left: 6px; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; color: var(--bad); border: 1px solid var(--bad); }
