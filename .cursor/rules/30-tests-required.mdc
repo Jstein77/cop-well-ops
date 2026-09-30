@@ -1,0 +1,13 @@
+---
+description: Tests are required for every change (IT Standard QA-001)
+alwaysApply: true
+---
+
+# Tests required (QA-001)
+
+A change is not done until it has tests and they pass.
+
+- Every new route gets tests in `tests/test_<feature>.py` using the `client` fixture from `tests/conftest.py`.
+- Cover at minimum: the happy path, 401 without identity, 403 without the role (`NO_ROLES` headers), and invalid input (422).
+- Send identity with the `READER` headers from `tests/conftest.py`.
+- Before finishing, run `ruff check .` and `pytest -q` and fix anything that fails. CI runs the same checks and `main` will not accept a PR without them passing.

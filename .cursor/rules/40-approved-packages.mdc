@@ -1,0 +1,11 @@
+---
+description: Approved packages only (IT Policy SEC-PKG-001)
+alwaysApply: true
+---
+
+# Approved packages only (SEC-PKG-001)
+
+- Only packages in `policy/approved-packages.txt` may be installed or added to `requirements.txt`.
+- Build with what is already approved before reaching for a new dependency. Dashboards, tables, and charts are server-rendered Jinja2 plus CSS.
+- `policy/approved-packages.txt` is owned by IT Architecture. Never edit it to unblock yourself.
+- Package installs are checked by a Cursor hook and by CI. If an install is blocked, stop, tell the user which policy blocked it, and offer the approved-stack alternative. Do not retry with another installer or a different spelling.

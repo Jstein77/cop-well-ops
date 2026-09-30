@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Package policy (SEC-PKG-001)
+        # Check against main's policy file so a PR cannot approve its own packages.
+        run: |
+          git show "origin/${{ github.base_ref || 'main' }}:policy/approved-packages.txt" > /tmp/approved-packages.txt
+          python .cursor/hooks/check_packages.py --check-requirements requirements.txt --policy /tmp/approved-packages.txt
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Test
+        run: pytest -q

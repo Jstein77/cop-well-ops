@@ -1,0 +1,23 @@
+---
+description: Auth and audit logging patterns (IT Standard SEC-004, OPS-001)
+alwaysApply: true
+---
+
+# Auth (SEC-004)
+
+Every route except `/health` requires an authenticated user. Identity comes from the corporate SSO proxy via `app/auth.py`; do not write your own auth.
+
+- Data routes and pages that show well data: `user: User = Depends(require_reader)`.
+- New roles: `require_role("wellops.<role>")` assigned to a module-level name in `app/auth.py`.
+- Never trust identity from query params, cookies, or request bodies.
+
+# Logging (OPS-001)
+
+- Use `logger = get_logger(__name__)` from `app/logging_config.py`. Never `print()`.
+- Log one audit event per data access with a dotted event name and structured `extra`, including the user:
+
+```python
+logger.info("wells.list", extra={"user": user.email, "status": status, "count": len(wells)})
+```
+
+- Never log secrets, tokens, or full request bodies. The request middleware already logs method, path, status, and duration.

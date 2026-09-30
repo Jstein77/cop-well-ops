@@ -1,0 +1,25 @@
+---
+description: IT-approved stack and project layout for well-ops apps
+alwaysApply: true
+---
+
+# Approved stack (IT Standard ARCH-001)
+
+This repo is built from the IT golden template. Every feature must use the approved stack:
+
+- **API and pages:** Python 3.12+, FastAPI. HTML pages are server-rendered Jinja2 templates in `app/templates/` that extend `base.html`. Styles go in `app/static/styles.css`. No frontend frameworks, no CDN scripts.
+- **Data:** SQLite through `app/db.py`. All SQL lives in `app/repository.py`.
+- **Tests:** pytest with FastAPI's `TestClient`, in `tests/`.
+- **Lint:** ruff (`ruff check .`).
+
+Layout for a new feature:
+
+| What | Where |
+| --- | --- |
+| Routes | `app/routers/<feature>.py`, registered in `create_app()` in `app/main.py` |
+| Queries | a function in `app/repository.py` |
+| Response models | `app/models.py` (pydantic) |
+| Page | `app/templates/<feature>.html` |
+| Tests | `tests/test_<feature>.py` |
+
+Do not add Streamlit, Flask, Django, React, ORMs, or any other framework. If a request needs something outside this stack, say so and propose the approved-stack alternative.
