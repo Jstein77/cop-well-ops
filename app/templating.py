@@ -22,6 +22,10 @@ def log_time(value: str) -> str:
     return datetime.fromisoformat(value).strftime("%a %d %b · %H:%M")
 
 
+def short_date(value: str | date) -> str:
+    return date.fromisoformat(str(value)).strftime("%a %d %b")
+
+
 def shift_label() -> str:
     now = datetime.now()
     shift = "Day shift" if 6 <= now.hour < 18 else "Night shift"
@@ -29,6 +33,10 @@ def shift_label() -> str:
 
 
 templates.env.filters.update(
-    number=number, status_label=status_label, days_since=days_since, log_time=log_time
+    number=number,
+    status_label=status_label,
+    days_since=days_since,
+    log_time=log_time,
+    short_date=short_date,
 )
 templates.env.globals["shift_label"] = shift_label

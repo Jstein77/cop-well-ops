@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Morning deferment · Well Ops{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">{{ shift_label() }}</p>
+    <h1>Morning deferment report</h1>
+  </div>
+  <p class="page-meta">As of {{ as_of | short_date }}</p>
+</div>
+
+{% set unplanned = deferments | rejectattr("planned") | list %}
+{% set overdue = integrity | selectattr("state", "equalto", "overdue") | list %}
+<section class="kpis">
+  <div class="kpi kpi-bad">
+    <span class="kpi-label">Deferred oil</span>
+    <span class="kpi-value">{{ total_lost_bopd | number }} <small>bopd</small></span>
+    <span class="kpi-sub">across {{ deferments | length }} wells</span>
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Unplanned</span>
+    <span class="kpi-value">{{ unplanned | sum(attribute="lost_bopd") | number }} <small>bopd</small></span>
+    <span class="kpi-sub">{{ unplanned | length }} wells</span>
+  </div>
+  <div class="kpi {{ 'kpi-bad' if overdue }}">
+    <span class="kpi-label">Integrity overdue</span>
+    <span class="kpi-value">{{ overdue | length }}</span>
+    <span class="kpi-sub">{{ integrity | length - overdue | length }} more due within {{ due_within_days }} days</span>
+  </div>
+</section>
+
+<section class="panel">
+  <header class="panel-head">
+    <h2>Deferred wells <span class="count">ranked by lost barrels per day</span></h2>
+  </header>
+  <table class="table">
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Well</th>
+        <th class="num">Lost (bopd)</th>
+        <th>Cause</th>
+        <th>Owner</th>
+        <th>Next action</th>
+        <th>Expected restart</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in deferments %}
+      <tr>
+        <td class="num muted">{{ loop.index }}</td>
+        <td>
+          <a class="well-link" href="/wells/{{ d.well_id }}">{{ d.well_name }}</a>
+          <span class="pill pill-{{ d.status }} pill-sub">{{ d.status | status_label }}</span>
+        </td>
+        <td class="num strong">{{ d.lost_bopd | number }}</td>
+        <td>
+          {{ d.cause }}
+          <span class="badge {{ 'badge-planned' if d.planned else 'badge-unplanned' }}">{{ "Planned" if d.planned else "Unplanned" }}</span>
+        </td>
+        <td>{{ d.owner }}</td>
+        <td class="muted">{{ d.next_action }}</td>
+        <td>{{ d.expected_restart | short_date if d.expected_restart else "Not set" }}</td>
+      </tr>
+      {% else %}
+      <tr><td class="empty" colspan="7">No deferred wells.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="panel">
+  <header class="panel-head">
+    <h2>Integrity items <span class="count">overdue or due within {{ due_within_days }} days</span></h2>
+  </header>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Well</th>
+        <th>Check</th>
+        <th>Owner</th>
+        <th>Due</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in integrity %}
+      <tr>
+        <td><a class="well-link" href="/wells/{{ item.well_id }}">{{ item.well_name }}</a></td>
+        <td>{{ item.check_type }}</td>
+        <td>{{ item.owner }}</td>
+        <td class="muted">{{ item.due_date | short_date }}</td>
+        <td>
+          {% if item.state == "overdue" %}
+          <span class="badge badge-overdue">Overdue {{ item.days_overdue }}d</span>
+          {% elif item.days_overdue == 0 %}
+          <span class="badge badge-due">Due today</span>
+          {% else %}
+          <span class="badge badge-due">Due in {{ -item.days_overdue }}d</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td class="empty" colspan="5">Nothing overdue or due within {{ due_within_days }} days.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
