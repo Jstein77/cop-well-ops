@@ -7,13 +7,30 @@
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="/">Well Ops</a>
-    <nav>{% block nav %}{% endblock %}</nav>
-    <span class="user">{{ user.email }}</span>
+  {% set nav_items = [("/", "Wells")] %}
+  {% set path = request.url.path %}
+  <header class="app-header">
+    <a class="brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2.5c3.6 4.3 6.5 8 6.5 11.5a6.5 6.5 0 0 1-13 0c0-3.5 2.9-7.2 6.5-11.5z"/>
+      </svg>
+      <span class="brand-name">Well Ops</span>
+      <span class="brand-asset">Arctic Operations</span>
+    </a>
+    <nav class="app-nav">
+      {% for href, label in nav_items %}
+      {% set active = path == href or (href == "/" and path.startswith("/wells")) %}
+      <a href="{{ href }}" class="{{ 'active' if active }}">{{ label }}</a>
+      {% endfor %}
+    </nav>
+    <div class="user-chip" title="{{ user.email }}">
+      <span class="avatar">{{ user.email[0] | upper }}</span>
+      <span class="user-email">{{ user.email }}</span>
+    </div>
   </header>
-  <main class="container">
+  <main class="page">
     {% block content %}{% endblock %}
   </main>
+  <footer class="app-footer">Synthetic demo data. Not for operational decisions.</footer>
 </body>
 </html>

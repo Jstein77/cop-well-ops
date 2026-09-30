@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ well.name }} · Well Ops{% endblock %}
+{% block content %}
+<a class="back-link" href="/">&larr; All wells</a>
+
+<div class="page-head">
+  <div>
+    <p class="eyebrow">{{ well.pad }} · {{ well.field_area }} · {{ well.lift_type }}</p>
+    <h1>{{ well.name }} <span class="pill pill-{{ well.status }} pill-lg">{{ well.status | status_label }}</span></h1>
+  </div>
+</div>
+
+{% if well.status_note %}
+<div class="callout callout-{{ well.status }}">{{ well.status_note }}</div>
+{% endif %}
+
+{% set pct = (well.oil_bopd / well.target_oil_bopd * 100) if well.target_oil_bopd else 0 %}
+<section class="kpis">
+  <div class="kpi">
+    <span class="kpi-label">Oil rate</span>
+    <span class="kpi-value">{{ well.oil_bopd | number }} <small>bopd</small></span>
+    {% if well.target_oil_bopd %}
+    <div class="meter {{ 'meter-bad' if pct < 90 }}"><span style="width: {{ [pct, 100] | min }}%"></span></div>
+    <span class="kpi-sub">
+      {{ pct | number }}% of {{ well.target_oil_bopd | number }} target
+      {% if well.target_oil_bopd > well.oil_bopd %}
+      · <span class="delta-down">deferring {{ (well.target_oil_bopd - well.oil_bopd) | number }} bopd</span>
+      {% endif %}
+    </span>
+    {% else %}
+    <span class="kpi-sub">No target while {{ well.status | status_label | lower }}</span>
+    {% endif %}
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Gas rate</span>
+    <span class="kpi-value">{{ well.gas_mcfd | number }} <small>mcfd</small></span>
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Water cut</span>
+    <span class="kpi-value">{{ well.water_cut_pct | number(1) }}<small>%</small></span>
+    <div class="meter meter-water"><span style="width: {{ well.water_cut_pct }}%"></span></div>
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Last inspection</span>
+    <span class="kpi-value">{{ well.last_inspection | days_since }} <small>days ago</small></span>
+    <span class="kpi-sub">{{ well.last_inspection }}</span>
+  </div>
+</section>
+
+<section class="panel">
+  <header class="panel-head"><h2>Shift log</h2></header>
+  {% include "_shift_log.html" %}
+</section>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Wells · Well Ops{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">{{ shift_label() }}</p>
+    <h1>Wells</h1>
+  </div>
+  <p class="page-meta">{{ well_count }} wells across {{ pads | length }} pads</p>
+</div>
+
+<div class="panel">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Well</th>
+        <th>Status</th>
+        <th>Lift</th>
+        <th class="num">Oil (bopd)</th>
+        <th class="num">Target</th>
+        <th class="num">Gas (mcfd)</th>
+        <th class="num">Water cut</th>
+        <th class="num">Last inspection</th>
+      </tr>
+    </thead>
+    {% for pad, wells in pads %}
+    <tbody>
+      <tr class="group-row">
+        <th colspan="8">{{ pad }} <span>{{ wells[0].field_area }}</span></th>
+      </tr>
+      {% for well in wells %}
+      <tr>
+        <td><a class="well-link" href="/wells/{{ well.id }}">{{ well.name }}</a></td>
+        <td><span class="pill pill-{{ well.status }}">{{ well.status | status_label }}</span></td>
+        <td class="muted">{{ well.lift_type }}</td>
+        <td class="num strong">{{ well.oil_bopd | number }}</td>
+        <td class="num muted">{{ well.target_oil_bopd | number }}</td>
+        <td class="num">{{ well.gas_mcfd | number }}</td>
+        <td class="num">{{ well.water_cut_pct | number(1) }}%</td>
+        <td class="num muted">{{ well.last_inspection | days_since }} days ago</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

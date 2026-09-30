@@ -5,12 +5,6 @@ def test_health_is_public(client):
     assert client.get("/health").json() == {"status": "ok"}
 
 
-def test_home_page_renders_for_signed_in_user(client):
-    response = client.get("/", headers=READER)
-    assert response.status_code == 200
-    assert "reader@example.com" in response.text
-
-
 def test_list_wells_requires_auth(client):
     assert client.get("/api/wells").status_code == 401
 

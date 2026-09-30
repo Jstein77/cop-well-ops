@@ -1,0 +1,13 @@
+<ol class="log">
+  {% for entry in log %}
+  <li class="log-entry">
+    <span class="log-cat log-cat-{{ entry.category | lower }}">{{ entry.category }}</span>
+    <div class="log-body">
+      <p>{% if show_well %}<a class="well-link" href="/wells/{{ entry.well_id }}">{{ entry.well_name }}</a> · {% endif %}{{ entry.note }}</p>
+      <span class="log-meta">{{ entry.logged_at | log_time }} · {{ entry.author }}</span>
+    </div>
+  </li>
+  {% else %}
+  <li class="empty">No shift log entries.</li>
+  {% endfor %}
+</ol>

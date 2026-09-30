@@ -27,7 +27,9 @@ async def lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     configure_logging(get_settings().log_level)
-    app = FastAPI(title="Well Ops", lifespan=lifespan)
+    app = FastAPI(
+        title="Well Ops", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None
+    )
     app.middleware("http")(request_logging_middleware)
     app.mount("/static", StaticFiles(directory=Path(__file__).with_name("static")), name="static")
     app.include_router(pages.router)
