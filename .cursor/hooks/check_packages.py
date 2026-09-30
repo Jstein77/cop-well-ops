@@ -24,6 +24,7 @@ SEGMENT_SPLIT = re.compile(r"&&|\|\||[;|\n]")
 NAME_RE = re.compile(r"^([A-Za-z0-9][A-Za-z0-9._-]*)")
 PYTHON_RE = re.compile(r"^(python|python3(\.\d+)?|py)$")
 PIP_RE = re.compile(r"^pip(3(\.\d+)?)?$")
+REDIRECT_RE = re.compile(r"^(\d*|&)(>>?|<)(&\d+)?")
 SHELLS = {"bash", "sh", "zsh"}
 PREFIXES = {"sudo", "env", "command", "exec", "time", "nohup"}
 
@@ -72,7 +73,23 @@ def split_tokens(segment: str) -> list[str]:
         tokens = segment.split()
     while tokens and (tokens[0] in PREFIXES or re.match(r"^\w+=", tokens[0])):
         tokens = tokens[1:]
-    return tokens
+    return strip_redirects(tokens)
+
+
+def strip_redirects(tokens: list[str]) -> list[str]:
+    kept: list[str] = []
+    skip_target = False
+    for token in tokens:
+        if skip_target:
+            skip_target = False
+            continue
+        match = REDIRECT_RE.match(token)
+        if match:
+            # A bare operator such as ">" or "2>" takes its target from the next token.
+            skip_target = match.end() == len(token) and not match.group(3)
+            continue
+        kept.append(token)
+    return kept
 
 
 def install_args(tokens: list[str]) -> tuple[str, list[str]] | None:

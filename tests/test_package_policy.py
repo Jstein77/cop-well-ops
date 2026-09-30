@@ -62,6 +62,23 @@ def test_allows_approved_and_unrelated_commands(command):
     assert run_hook(command) == {"permission": "allow"}
 
 
+@pytest.mark.parametrize(
+    "command",
+    [
+        "pip install fastapi 2>&1 | tail -2",
+        "pip install fastapi > /tmp/pip.log 2>&1",
+        "pip install fastapi >/tmp/pip.log",
+    ],
+)
+def test_ignores_shell_redirections(command):
+    assert run_hook(command) == {"permission": "allow"}
+
+
+def test_denial_names_only_the_package():
+    decision = run_hook("pip install --dry-run streamlit 2>&1 | tail -2")
+    assert "'streamlit' not on" in decision["user_message"]
+
+
 def test_names_are_normalized():
     assert check_packages.check_command("pip install Jinja2 Pydantic_Core", ROOT, APPROVED) == []
 
