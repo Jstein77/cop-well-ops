@@ -1,0 +1,26 @@
+# IT Policy SEC-PKG-001: Approved Python Packages
+# Owner: Emerging Tech / IT Architecture
+#
+# Only packages listed here may be installed in projects built from the
+# well-ops golden template. One package name per line; versions are pinned
+# in requirements.txt. To request an addition, open an "Approved Package
+# Request" ticket with IT Architecture.
+
+# Web framework and server
+fastapi
+starlette
+uvicorn
+pydantic
+pydantic-core
+jinja2
+markupsafe
+
+# Testing and quality
+pytest
+httpx
+ruff
+
+# Packaging tooling
+pip
+setuptools
+wheel
