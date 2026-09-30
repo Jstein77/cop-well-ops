@@ -344,8 +344,55 @@ h1, h2, p { margin: 0; }
 .log-cat-drilling::before { background: var(--cop-blue); }
 .log-cat-safety::before { background: var(--cop-yellow); }
 
+/* Morning report */
+
+.grid-main { display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(280px, 1fr); align-items: start; gap: 24px; }
+
+.pill-sm { display: flex; margin-top: 3px; font-size: 12px; font-weight: 400; color: var(--muted); }
+.pill-sm::before { width: 6px; height: 6px; }
+
+.worklist td { vertical-align: top; }
+
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+.tag-planned { color: var(--cop-gray); }
+.tag-unplanned { color: var(--cop-dark-red); }
+.tag-missing { margin-left: 0; color: var(--cop-black); background: var(--cop-yellow); border-color: var(--cop-yellow); }
+
+.split { display: flex; height: 10px; margin: 8px 0 6px; background: var(--cop-dark-red); }
+.split-planned { background: var(--cop-gray); }
+.split-legend { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.split-legend strong { margin-left: 4px; color: var(--ink); font-size: 14px; }
+.split-legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 6px; }
+.legend-planned::before { background: var(--cop-gray); }
+.legend-unplanned::before { background: var(--cop-dark-red); }
+
+.due-list { margin: 0; padding: 0; list-style: none; }
+.due-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line-2);
+}
+.due-list li:last-child { border-bottom: 0; }
+.due-list p { margin-top: 2px; font-size: 13px; color: var(--muted); }
+.due { font-size: 12px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+.due-overdue { color: var(--cop-dark-red); }
+
 @media (max-width: 900px) {
-  .grid-2 { grid-template-columns: 1fr; }
+  .grid-2, .grid-main { grid-template-columns: 1fr; }
   .app-header { gap: 20px; padding: 0 16px; }
   .brand-app, .user-email { display: none; }
 }

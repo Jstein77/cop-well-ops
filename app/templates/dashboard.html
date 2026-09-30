@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Morning report · Well Ops{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">{{ shift_label() }}</p>
+    <h1>Morning report</h1>
+  </div>
+  <p class="page-meta">Rates from latest well tests</p>
+</div>
+
+{% set pct = oil / forecast * 100 if forecast else 0 %}
+<section class="kpis">
+  <div class="kpi">
+    <span class="kpi-label">Oil rate vs forecast</span>
+    <span class="kpi-value">{{ oil | number }} <small>of {{ forecast | number }} bopd</small></span>
+    <div class="meter {{ 'meter-bad' if pct < 90 }}"><span style="width: {{ [pct, 100] | min }}%"></span></div>
+    <span class="kpi-sub">{{ pct | number }}% of forecast</span>
+  </div>
+  <div class="kpi kpi-bad">
+    <span class="kpi-label">Deferred production</span>
+    <span class="kpi-value">{{ deferred | number }} <small>bopd</small></span>
+    <span class="kpi-sub">{{ deferring_count }} wells below target</span>
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Planned vs unplanned</span>
+    <div class="split">
+      <span class="split-planned" style="width: {{ planned / deferred * 100 if deferred else 0 }}%"></span>
+      <span class="split-unplanned"></span>
+    </div>
+    <div class="split-legend">
+      <span class="legend-planned">Planned <strong>{{ planned | number }}</strong></span>
+      <span class="legend-unplanned">Unplanned <strong>{{ unplanned | number }}</strong></span>
+    </div>
+  </div>
+</section>
+
+<div class="grid-main">
+  <section class="panel">
+    <header class="panel-head">
+      <h2>Deferment worklist <span class="count">{{ worklist | length }} wells · ranked by lost bopd</span></h2>
+      <div class="chip-group">
+        <a class="chip {{ 'active' if not selected_type }}" href="/dashboard">All</a>
+        <a class="chip {{ 'active' if selected_type == 'planned' }}" href="?type=planned">Planned</a>
+        <a class="chip {{ 'active' if selected_type == 'unplanned' }}" href="?type=unplanned">Unplanned</a>
+      </div>
+    </header>
+    <table class="table worklist">
+      <thead>
+        <tr>
+          <th>Well</th><th class="num">Lost bopd</th><th>Cause</th>
+          <th>Owner</th><th>Next action</th><th class="num">Restart</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in worklist %}
+        <tr data-well="{{ item.name }}">
+          <td>
+            <a class="well-link" href="/wells/{{ item.id }}">{{ item.name }}</a>
+            <span class="pill pill-{{ item.status }} pill-sm">{{ item.status | status_label }}</span>
+          </td>
+          <td class="num strong">{{ item.lost_bopd | number }}</td>
+          {% if item.cause %}
+          <td>
+            {{ item.cause }}
+            <span class="tag {{ 'tag-planned' if item.planned else 'tag-unplanned' }}">{{ 'Planned' if item.planned else 'Unplanned' }}</span>
+          </td>
+          <td>{{ item.owner }}</td>
+          <td class="muted">{{ item.next_action }}</td>
+          <td class="num {{ 'delta-down' if item.expected_restart and item.expected_restart < today }}">{{ item.expected_restart or 'TBD' }}</td>
+          {% else %}
+          <td colspan="4"><span class="tag tag-missing">Not logged</span> <span class="muted">No cause or owner recorded</span></td>
+          {% endif %}
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty">No wells below target.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <header class="panel-head">
+      <h2>Compliance due <span class="count">next {{ window_days }} days</span></h2>
+      {% if overdue_count %}<span class="badge badge-overdue">{{ overdue_count }} overdue</span>{% endif %}
+    </header>
+    <ul class="due-list">
+      {% for check in compliance %}
+      <li data-due="{{ check.well_name }}">
+        <div>
+          <a class="well-link" href="/wells/{{ check.well_id }}">{{ check.well_name }}</a>
+          <p>{{ check.check_type }} · {{ check.owner }}</p>
+        </div>
+        {% if check.days_until < 0 %}
+        <span class="due due-overdue">{{ -check.days_until }} days overdue</span>
+        {% elif check.days_until == 0 %}
+        <span class="due due-overdue">Due today</span>
+        {% else %}
+        <span class="due">Due in {{ check.days_until }} days</span>
+        {% endif %}
+      </li>
+      {% else %}
+      <li class="empty">Nothing due in the next {{ window_days }} days.</li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+{% endblock %}
