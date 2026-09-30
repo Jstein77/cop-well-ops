@@ -36,6 +36,35 @@ WELLS = [
      0, 1250, 0, 38.8, "2026-09-21", "Gas lift valve change-out in progress."),
 ]  # fmt: skip
 
+DEFERMENTS = [
+    # well name, cause, planned, owner, next action, expected restart (None = not yet known)
+    ("Muskox-12", "ESP failure", 0, "R. Okafor",
+     "Pump change with workover rig", "2026-10-02"),
+    ("Snowgoose-9", "Coiled tubing cleanout", 1, "J. Alvarez",
+     "Finish cleanout and hand back to production", "2026-10-02"),
+    ("Kestrel-8", "Gas lift valve change-out", 1, "R. Okafor",
+     "Slickline to set remaining two valves", "2026-10-01"),
+    ("Sandpiper-5", "Sustained annulus pressure", 0, "S. Patel",
+     "Integrity review of bleed-down data", None),
+    ("Wolverine-4", "Gas lift under-injection", 0, "M. Chen",
+     "Re-test after injection increase", "2026-10-01"),
+    ("Marten-10", "High water cut", 0, "M. Chen",
+     "Water shut-off candidate review", None),
+    ("Ptarmigan-7", "ESP frequency reduced", 0, "S. Patel",
+     "Step frequency back up after vibration check", "2026-10-01"),
+]  # fmt: skip
+
+INTEGRITY_CHECKS = [
+    # well name, check type, due date, owner
+    ("Muskox-12", "Wellhead inspection", "2026-08-19", "R. Okafor"),
+    ("Lynx-1", "Wellhead inspection", "2026-08-31", "R. Okafor"),
+    ("Sandpiper-5", "Annulus pressure review", "2026-09-20", "S. Patel"),
+    ("Marten-10", "Safety valve test", "2026-10-04", "M. Chen"),
+    ("Caribou-3", "Safety valve test", "2026-10-09", "T. Nakamura"),
+    ("Grayling-2", "Safety valve test", "2026-10-15", "J. Alvarez"),
+    ("Raven-11", "Wellhead inspection", "2026-11-12", "S. Patel"),
+]
+
 SHIFT_LOG = [
     # well name, logged at, author, category, note
     ("Muskox-12", "2026-09-30T06:40", "R. Okafor", "Maintenance",
@@ -79,4 +108,14 @@ def seed_if_empty(conn: sqlite3.Connection) -> None:
         [(logged_at, author, category, note, name) for name, logged_at, author, category, note
          in SHIFT_LOG],
     )  # fmt: skip
+    conn.executemany(
+        "INSERT INTO deferments (well_id, cause, planned, owner, next_action, expected_restart)"
+        " SELECT id, ?, ?, ?, ?, ? FROM wells WHERE name = ?",
+        [(*rest, name) for name, *rest in DEFERMENTS],
+    )
+    conn.executemany(
+        "INSERT INTO integrity_checks (well_id, check_type, due_date, owner)"
+        " SELECT id, ?, ?, ? FROM wells WHERE name = ?",
+        [(*rest, name) for name, *rest in INTEGRITY_CHECKS],
+    )
     conn.commit()
