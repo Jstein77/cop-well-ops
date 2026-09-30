@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from app.config import get_settings
 from app.db import connect
 from app.logging_config import configure_logging, get_logger, request_logging_middleware
-from app.routers import pages, wells
+from app.routers import dashboard, pages, wells
 from app.seed import seed_if_empty
 
 logger = get_logger(__name__)
@@ -34,6 +34,7 @@ def create_app() -> FastAPI:
     app.mount("/static", StaticFiles(directory=Path(__file__).with_name("static")), name="static")
     app.include_router(pages.router)
     app.include_router(wells.router)
+    app.include_router(dashboard.router)
     return app
 
 

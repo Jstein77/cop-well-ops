@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
 </head>
 <body>
-  {% set nav_items = [("/", "Wells")] %}
+  {% set nav_items = [("/dashboard", "Morning report"), ("/", "Wells")] %}
   {% set path = request.url.path %}
   <header class="app-header">
     <a class="brand" href="/">
