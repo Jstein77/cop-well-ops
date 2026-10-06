@@ -222,6 +222,10 @@ h1, h2, p { margin: 0; }
   vertical-align: 1px;
 }
 .badge-overdue { color: var(--bad); }
+.badge-planned { color: var(--muted); }
+.due-soon { color: var(--warn); font-weight: 600; }
+.nowrap { white-space: nowrap; }
+.lost-cell { min-width: 120px; }
 
 .callout {
   margin-bottom: 24px;
