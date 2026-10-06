@@ -7,6 +7,7 @@ def test_well_register_lists_wells_by_pad(client):
     assert "12 wells across 4 pads" in response.text
     assert "Ptarmigan-7" in response.text
     assert "reader@example.com" in response.text
+    assert 'href="/deferments"' in response.text
 
 
 def test_well_register_requires_auth(client):
